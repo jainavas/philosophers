@@ -10,6 +10,7 @@ SRC_DIR = src
 SRC = philo.c\
 	philo2.c\
 	ft_atoi.c\
+	intoverunderflow.c\
 
 OBJ = $(SRC:.c=.o)
 

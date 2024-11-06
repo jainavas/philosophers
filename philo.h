@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jnava <jnava@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 20:25:51 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/04 22:08:36 by jnava            ###   ########.fr       */
+/*   Updated: 2024/11/06 19:10:18 by jainavas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 typedef struct philo
 {
-	int				fork;
+	int				philosall;
 	int				philonum;
 	pthread_t		thread;
 	pthread_mutex_t	lock;
@@ -39,8 +39,10 @@ typedef struct philo
 int		ft_atoi(const char *str);
 t_philo	*philolast(t_philo *lst);
 void	*philo_routine(void *philo);
-void	philonew(t_philo **philos, int num);
+void	philonew(t_philo **philos, int num, int numphilos);
 void	freephilos(t_philo **philos, int nphilos);
-void	eat(t_philo *philo, struct timeval *tv);
+void	eat(t_philo *philo, struct timeval *tv, int x, int c);
+int		checkoverflow(const char *str);
+int		inputdebug(int argc, char **argv);
 
 #endif

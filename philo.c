@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jnava <jnava@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 19:45:18 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/04 22:08:16 by jnava            ###   ########.fr       */
+/*   Updated: 2024/11/06 20:42:34 by jainavas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,23 +55,29 @@ void	*philo_routine(void *philovoid)
 	struct timeval	tv;
 	int				x;
 	int				c;
+	int				f;
 
 	gettimeofday(&tv, NULL);
-	philo = philovoid;
+	philo = (t_philo *)philovoid;
 	x = tv.tv_usec;
-	c = 0;
-	while (philo->timetodiems * 1000 > (tv.tv_usec - x)
-		&& c++ < philo->maxtimeseaten)
+	c = tv.tv_sec;
+	while (1)
 	{
-		x = tv.tv_usec;
-		printf("%ld %d is thinking\n", (tv.tv_usec) / 1000, philo->philonum);
-		eat(philo, &tv);
-		printf("%ld %d is sleeping\n", (tv.tv_usec) / 1000, philo->philonum);
+		gettimeofday(&tv, NULL);
+		f = ((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000);
+		printf("%ld %d is thinking\n",((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000), philo->philonum);
+		eat(philo, &tv, x, c);
+		if ((((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000) - f) > philo->timetodiems)
+			break;
+		printf("%ld %d is sleeping\n", ((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000), philo->philonum);
 		usleep(philo->timetosleepms * 1000);
 		gettimeofday(&tv, NULL);
+		if ((((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000) - f) > philo->timetodiems)
+			break;
 	}
-	printf("%ld %d died\n", (tv.tv_usec) / 1000, philo->philonum);
-	exit(-1);
+	printf("%ld %d died\n", ((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000), philo->philonum);
+	freephilos(&philo, philo->philosall);
+	return (NULL);
 }
 
 int	main(int argc, char **argv)
@@ -82,11 +88,11 @@ int	main(int argc, char **argv)
 
 	x = 0;
 	philos = NULL;
-	if (argc != 5 && argc != 6)
-		return (printf("Argumentos mal\n"), -1);
+	if (inputdebug(argc, argv) == -1)
+		return (-1);
 	numphilos = ft_atoi(argv[1]);
 	while (x++ < numphilos)
-		philonew(&philos, x);
+		philonew(&philos, x, numphilos);
 	makeround(numphilos, &philos, argv);
 	freephilos(&philos, numphilos);
 }
