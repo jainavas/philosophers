@@ -41,11 +41,9 @@ void	freephilos(t_philo **philos, int nphilos)
 	{
 		tmp = (*philos)->right;
 		pthread_mutex_destroy(&(*philos)->lock);
-		pthread_detach((*philos)->thread);
 		free(*philos);
 		*philos = tmp;
 	}
-	exit(0);
 }
 
 t_philo	*philolast(t_philo *lst)
@@ -62,17 +60,23 @@ t_philo	*philolast(t_philo *lst)
 void	eat(t_philo *philo, struct timeval *tv, int x, int c)
 {
 	pthread_mutex_lock(&philo->lock);
+	gettimeofday(tv, NULL);
+	printf("%ld %d has taken a fork\n", timeinms(tv, x, c), philo->philonum);
 	pthread_mutex_lock(&philo->right->lock);
 	gettimeofday(tv, NULL);
-	printf("%ld %d has taken a fork\n", ((tv->tv_usec - x) / 1000 + (tv->tv_sec - c) * 1000), philo->philonum);
+	printf("%ld %d has taken a fork\n", timeinms(tv, x, c), philo->philonum);
 	usleep(philo->timetoeatms * 1000);
 	gettimeofday(tv, NULL);
-	printf("%ld %d is eating\n", ((tv->tv_usec - x) / 1000 + (tv->tv_sec - c) * 1000), philo->philonum);
+	printf("%ld %d is eating\n", timeinms(tv, x, c), philo->philonum);
 	pthread_mutex_unlock(&philo->lock);
 	pthread_mutex_unlock(&philo->right->lock);
 	philo->maxtimeseaten--;
 	if (philo->maxtimeseaten == 0)
-		freephilos(&philo, philo->philosall);
+	{
+		pthread_mutex_lock(&philo->sim->lock);
+		philo->sim->sim_over = 1;
+		pthread_mutex_unlock(&philo->sim->lock);
+	}
 }
 
 int	inputdebug(int argc, char **argv)

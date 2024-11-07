@@ -9,6 +9,7 @@ SRC_DIR = src
 
 SRC = philo.c\
 	philo2.c\
+	philo3.c\
 	ft_atoi.c\
 	intoverunderflow.c\
 

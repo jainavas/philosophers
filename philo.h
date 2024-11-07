@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jnava <jnava@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 20:25:51 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/07 00:14:47 by jainavas         ###   ########.fr       */
+/*   Updated: 2024/11/07 11:45:50 by jnava            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,19 @@
 # include <sys/time.h>
 # include <unistd.h>
 
+typedef struct control
+{
+	pthread_mutex_t	lock;
+	int				sim_over;
+}	t_sim;
+
+typedef struct time
+{
+	int				x;
+	int				c;
+	int				f;
+}	t_timec;
+
 typedef struct philo
 {
 	int				philosall;
@@ -34,16 +47,20 @@ typedef struct philo
 	int				timetoeatms;
 	int				timetosleepms;
 	int				maxtimeseaten;
+	t_sim			*sim;
 }	t_philo;
 
-int		ft_atoi(const char *str);
-void	philoinit(t_philo *philo, char **argv);
-t_philo	*philolast(t_philo *lst);
-void	*philo_routine(void *philo);
-void	philonew(t_philo **philos, int num, int numphilos);
-void	freephilos(t_philo **philos, int nphilos);
-void	eat(t_philo *philo, struct timeval *tv, int x, int c);
-int		checkoverflow(const char *str);
-int		inputdebug(int argc, char **argv);
+int			ft_atoi(const char *str);
+long int	timeinms(struct timeval *tv, int x, int c);
+int			checksim(t_philo *philo);
+void		philoinit(t_philo *philo, char **argv, t_sim *control);
+t_philo		*philolast(t_philo *lst);
+void		*philo_routine(void *philo);
+void		philonew(t_philo **philos, int num, int numphilos);
+void		freephilos(t_philo **philos, int nphilos);
+void		eat(t_philo *philo, struct timeval *tv, int x, int c);
+int			checkoverflow(const char *str);
+int			inputdebug(int argc, char **argv);
+int			routinewhile(t_philo *philo, struct timeval *tv, t_timec *time);
 
 #endif

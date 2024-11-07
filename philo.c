@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jnava <jnava@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 19:45:18 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/07 00:18:05 by jainavas         ###   ########.fr       */
+/*   Updated: 2024/11/07 11:43:56 by jnava            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	philoinit(t_philo *philo, char **argv)
+void	philoinit(t_philo *philo, char **argv, t_sim *control)
 {
 	philo->timetodiems = ft_atoi(argv[2]);
 	philo->timetoeatms = ft_atoi(argv[3]);
@@ -21,10 +21,11 @@ void	philoinit(t_philo *philo, char **argv)
 		philo->maxtimeseaten = ft_atoi(argv[5]);
 	else
 		philo->maxtimeseaten = INT_MAX;
+	philo->sim = control;
 	pthread_create(&philo->thread, NULL, philo_routine, (void *)philo);
 }
 
-void	makeround(int nphilo, t_philo **philos, char **argv)
+void	makeround(int nphilo, t_philo **philos, char **argv, t_sim *control)
 {
 	t_philo	*tmp;
 	int		n;
@@ -38,7 +39,7 @@ void	makeround(int nphilo, t_philo **philos, char **argv)
 	n = 0;
 	while (nphilo > n++)
 	{
-		philoinit(tmp, argv);
+		philoinit(tmp, argv, control);
 		tmp = tmp->right;
 	}
 	n = 0;
@@ -53,30 +54,17 @@ void	*philo_routine(void *philovoid)
 {
 	t_philo			*philo;
 	struct timeval	tv;
-	int				x;
-	int				c;
-	int				f;
+	t_timec			time;
 
 	gettimeofday(&tv, NULL);
 	philo = (t_philo *)philovoid;
-	x = tv.tv_usec;
-	c = tv.tv_sec;
-	while (1)
-	{
-		gettimeofday(&tv, NULL);
-		f = ((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000);
-		printf("%ld %d is thinking\n",((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000), philo->philonum);
-		eat(philo, &tv, x, c);
-		if ((((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000) - f) > philo->timetodiems)
-			break;
-		printf("%ld %d is sleeping\n", ((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000), philo->philonum);
-		usleep(philo->timetosleepms * 1000);
-		gettimeofday(&tv, NULL);
-		if ((((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000) - f) > philo->timetodiems)
-			break;
-	}
-	printf("%ld %d died\n", ((tv.tv_usec - x) / 1000 + (tv.tv_sec - c) * 1000), philo->philonum);
-	freephilos(&philo, philo->philosall);
+	time.x = tv.tv_usec;
+	time.c = tv.tv_sec;
+	routinewhile(philo, &tv, &time);
+	printf("%ld %d died\n", timeinms(&tv, time.x, time.c), philo->philonum);
+	pthread_mutex_lock(&philo->sim->lock);
+	philo->sim->sim_over = 1;
+	pthread_mutex_unlock(&philo->sim->lock);
 	return (NULL);
 }
 
@@ -85,14 +73,17 @@ int	main(int argc, char **argv)
 	t_philo			*philos;
 	int				x;
 	int				numphilos;
-	
+	t_sim			control;
+
 	x = 0;
 	philos = NULL;
+	control.sim_over = 0;
+	pthread_mutex_init(&control.lock, NULL);
 	if (inputdebug(argc, argv) == -1)
 		return (-1);
 	numphilos = ft_atoi(argv[1]);
 	while (x++ < numphilos)
 		philonew(&philos, x, numphilos);
-	makeround(numphilos, &philos, argv);
+	makeround(numphilos, &philos, argv, &control);
 	freephilos(&philos, numphilos);
 }
