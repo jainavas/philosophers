@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jnava <jnava@student.42.fr>                +#+  +:+       +#+        */
+/*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 19:45:18 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/07 11:43:56 by jnava            ###   ########.fr       */
+/*   Updated: 2024/11/07 19:06:51 by jainavas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ int	main(int argc, char **argv)
 	if (inputdebug(argc, argv) == -1)
 		return (-1);
 	numphilos = ft_atoi(argv[1]);
+	if (numphilos == 1)
+		return (printf("A philosopher cant eat with only one fork\n"), 0);
 	while (x++ < numphilos)
 		philonew(&philos, x, numphilos);
 	makeround(numphilos, &philos, argv, &control);

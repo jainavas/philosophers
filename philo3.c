@@ -40,7 +40,7 @@ int	routinewhile(t_philo *philo, struct timeval *tv, t_timec *time)
 		time->f = timeinms(tv, time->x, time->c);
 		printf("%ld %d is thinking\n", timeinms(tv, time->x, time->c),
 			philo->philonum);
-		eat(philo, tv, time->x, time->c);
+		eat(philo, tv, time);
 		if ((timeinms(tv, time->x, time->c) - time->f) > philo->timetodiems
 			|| checksim(philo))
 			break ;

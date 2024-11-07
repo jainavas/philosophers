@@ -57,17 +57,23 @@ t_philo	*philolast(t_philo *lst)
 	return (tmp);
 }
 
-void	eat(t_philo *philo, struct timeval *tv, int x, int c)
+void	eat(t_philo *philo, struct timeval *tv, t_timec *time)
 {
 	pthread_mutex_lock(&philo->lock);
 	gettimeofday(tv, NULL);
-	printf("%ld %d has taken a fork\n", timeinms(tv, x, c), philo->philonum);
+	printf("%ld %d has taken a fork\n", timeinms(tv, time->x, time->c),
+		philo->philonum);
+	if ((timeinms(tv, time->x, time->c) - time->f) > philo->timetodiems
+		|| checksim(philo))
+		return ;
 	pthread_mutex_lock(&philo->right->lock);
 	gettimeofday(tv, NULL);
-	printf("%ld %d has taken a fork\n", timeinms(tv, x, c), philo->philonum);
+	printf("%ld %d has taken a fork\n", timeinms(tv, time->x, time->c),
+		philo->philonum);
 	usleep(philo->timetoeatms * 1000);
 	gettimeofday(tv, NULL);
-	printf("%ld %d is eating\n", timeinms(tv, x, c), philo->philonum);
+	printf("%ld %d is eating\n", timeinms(tv, time->x, time->c),
+		philo->philonum);
 	pthread_mutex_unlock(&philo->lock);
 	pthread_mutex_unlock(&philo->right->lock);
 	philo->maxtimeseaten--;
