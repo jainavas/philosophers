@@ -6,7 +6,7 @@
 /*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 20:25:51 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/06 19:10:18 by jainavas         ###   ########.fr       */
+/*   Updated: 2024/11/07 00:14:47 by jainavas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct philo
 }	t_philo;
 
 int		ft_atoi(const char *str);
+void	philoinit(t_philo *philo, char **argv);
 t_philo	*philolast(t_philo *lst);
 void	*philo_routine(void *philo);
 void	philonew(t_philo **philos, int num, int numphilos);

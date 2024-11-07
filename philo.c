@@ -6,7 +6,7 @@
 /*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 19:45:18 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/06 20:42:34 by jainavas         ###   ########.fr       */
+/*   Updated: 2024/11/07 00:18:05 by jainavas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	philoinit(t_philo *philo, char **argv)
 	pthread_create(&philo->thread, NULL, philo_routine, (void *)philo);
 }
 
-void	makeround(int nphilos, t_philo **philos, char **argv)
+void	makeround(int nphilo, t_philo **philos, char **argv)
 {
 	t_philo	*tmp;
 	int		n;
@@ -36,13 +36,13 @@ void	makeround(int nphilos, t_philo **philos, char **argv)
 	(*philos)->left = tmp;
 	tmp = *philos;
 	n = 0;
-	while (nphilos > n++)
+	while (nphilo > n++)
 	{
 		philoinit(tmp, argv);
 		tmp = tmp->right;
 	}
 	n = 0;
-	while (nphilos > n++)
+	while (nphilo > n++)
 	{
 		pthread_join(tmp->thread, NULL);
 		tmp = tmp->right;
@@ -85,7 +85,7 @@ int	main(int argc, char **argv)
 	t_philo			*philos;
 	int				x;
 	int				numphilos;
-
+	
 	x = 0;
 	philos = NULL;
 	if (inputdebug(argc, argv) == -1)

@@ -72,10 +72,7 @@ void	eat(t_philo *philo, struct timeval *tv, int x, int c)
 	pthread_mutex_unlock(&philo->right->lock);
 	philo->maxtimeseaten--;
 	if (philo->maxtimeseaten == 0)
-	{
 		freephilos(&philo, philo->philosall);
-		exit(0);
-	}
 }
 
 int	inputdebug(int argc, char **argv)
