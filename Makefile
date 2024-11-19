@@ -19,7 +19,7 @@ INCLUDE = philo.h
 
 NAME = philo
 
-all: $(NAME)
+all: fork $(NAME)
 
 %.o: %.c
 	@$(CC) $(CCFLAGS) -I/usr/include -c $< -o $@
@@ -35,5 +35,25 @@ fclean:
 	@$(RM) $(NAME) $(OBJ)
 
 re: fclean all
+
+fork:
+	@echo "		 ████  ██  ████"
+	@echo "		 ██  ██  ██░░██"
+	@echo "		 ██  ██  ██░░██"
+	@echo "		 ██  ██  ██░░██"
+	@echo "		 ██        ░░██"
+	@echo "		 ██        ░░██"
+	@echo "		   ██    ░░██  "
+	@echo "		     ██░░██    "
+	@echo "		     ██░░██    "
+	@echo "		     ██░░██    "
+	@echo "		     ██░░██    "
+	@echo "		     ██░░██    "
+	@echo "		     ██░░██    "
+	@echo "		   ██    ░░██  "
+	@echo "		   ██    ░░██  "
+	@echo "		   ██    ░░██  "
+	@echo "		   ██  ░░░░██  "
+	@echo "		     ██████    "
 
 .PHONY: all clean fclean re
