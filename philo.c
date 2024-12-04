@@ -6,7 +6,7 @@
 /*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 19:45:18 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/07 19:06:51 by jainavas         ###   ########.fr       */
+/*   Updated: 2024/12/04 12:50:34 by jainavas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	philoinit(t_philo *philo, char **argv, t_sim *control)
 void	makeround(int nphilo, t_philo **philos, char **argv, t_sim *control)
 {
 	t_philo	*tmp;
+	t_timec	time;
 	int		n;
 
 	tmp = *philos;
@@ -37,8 +38,10 @@ void	makeround(int nphilo, t_philo **philos, char **argv, t_sim *control)
 	(*philos)->left = tmp;
 	tmp = *philos;
 	n = 0;
+	pthread_mutex_init(&time.lock, NULL);
 	while (nphilo > n++)
 	{
+		tmp->time = &time;
 		philoinit(tmp, argv, control);
 		tmp = tmp->right;
 	}
@@ -54,17 +57,19 @@ void	*philo_routine(void *philovoid)
 {
 	t_philo			*philo;
 	struct timeval	tv;
-	t_timec			time;
 
 	gettimeofday(&tv, NULL);
 	philo = (t_philo *)philovoid;
-	time.x = tv.tv_usec;
-	time.c = tv.tv_sec;
-	routinewhile(philo, &tv, &time);
-	printf("%ld %d died\n", timeinms(&tv, time.x, time.c), philo->philonum);
+	pthread_mutex_lock(&philo->time->lock);
+	philo->time->x = tv.tv_usec;
+	philo->time->c = tv.tv_sec;
+	pthread_mutex_unlock(&philo->time->lock);
+	routinewhile(philo, &tv);
 	pthread_mutex_lock(&philo->sim->lock);
 	philo->sim->sim_over = 1;
 	pthread_mutex_unlock(&philo->sim->lock);
+	if (philo->dead == 1)
+		printf("%ld %d died\n", timeinms(&tv, philo), philo->philonum);
 	return (NULL);
 }
 
@@ -82,8 +87,6 @@ int	main(int argc, char **argv)
 	if (inputdebug(argc, argv) == -1)
 		return (-1);
 	numphilos = ft_atoi(argv[1]);
-	if (numphilos == 1)
-		return (printf("A philosopher cant eat with only one fork\n"), 0);
 	while (x++ < numphilos)
 		philonew(&philos, x, numphilos);
 	makeround(numphilos, &philos, argv, &control);

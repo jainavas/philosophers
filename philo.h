@@ -6,7 +6,7 @@
 /*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 20:25:51 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/07 19:14:03 by jainavas         ###   ########.fr       */
+/*   Updated: 2024/11/26 21:16:18 by jainavas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,39 +30,42 @@ typedef struct control
 
 typedef struct time
 {
+	pthread_mutex_t	lock;
 	int				x;
 	int				c;
-	int				f;
 }	t_timec;
 
 typedef struct philo
 {
 	int				philosall;
 	int				philonum;
+	int				dead;
 	pthread_t		thread;
 	pthread_mutex_t	lock;
 	struct philo	*right;
 	struct philo	*left;
+	t_timec			*time;
 	int				timetodiems;
 	int				timetoeatms;
 	int				timetosleepms;
 	int				maxtimeseaten;
 	t_sim			*sim;
+	int				f;
 }	t_philo;
 
 int			ft_atoi(const char *str);
-long int	timeinms(struct timeval *tv, int x, int c);
+long int	timeinms(struct timeval *tv, t_philo *philo);
 int			checksim(t_philo *philo);
-int			checkdead(struct timeval *tv, t_timec *t, t_philo *philo);
-void		setsimover(t_philo *philo);
+int			getforkeven(t_philo *philo, struct timeval *tv);
+int			getforkodd(t_philo *philo, struct timeval *tv);
 void		philoinit(t_philo *philo, char **argv, t_sim *control);
 t_philo		*philolast(t_philo *lst);
 void		*philo_routine(void *philo);
 void		philonew(t_philo **philos, int num, int numphilos);
 void		freephilos(t_philo **philos, int nphilos);
-void		eat(t_philo *philo, struct timeval *tv, t_timec *time);
+int			eat(t_philo *philo, struct timeval *tv);
 int			checkoverflow(const char *str);
 int			inputdebug(int argc, char **argv);
-int			routinewhile(t_philo *philo, struct timeval *tv, t_timec *time);
+int			routinewhile(t_philo *philo, struct timeval *tv);
 
 #endif

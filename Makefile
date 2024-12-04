@@ -3,7 +3,7 @@ RM = rm -f
 
 CC = cc
 
-CCFLAGS = -Wall -Wextra -Werror -g3
+CCFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
 
 SRC_DIR = src
 

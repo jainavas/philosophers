@@ -12,10 +12,16 @@
 
 #include "philo.h"
 
-long int	timeinms(struct timeval *tv, int x, int c)
+long int	timeinms(struct timeval *tv, t_philo *philo)
 {
+	long int	tmp;
+
 	gettimeofday(tv, NULL);
-	return (((tv->tv_usec - x) / 1000 + (tv->tv_sec - c) * 1000));
+	pthread_mutex_lock(&philo->time->lock);
+	tmp = ((tv->tv_usec - philo->time->x) / 1000
+			+ (tv->tv_sec - philo->time->c) * 1000);
+	pthread_mutex_unlock(&philo->time->lock);
+	return (tmp);
 }
 
 int	checksim(t_philo *philo)
@@ -33,23 +39,56 @@ int	checksim(t_philo *philo)
 	}
 }
 
-int	routinewhile(t_philo *philo, struct timeval *tv, t_timec *time)
+int	routinewhile(t_philo *philo, struct timeval *tv)
 {
+	philo->f = timeinms(tv, philo);
 	while (1)
 	{
-		time->f = timeinms(tv, time->x, time->c);
-		printf("%ld %d is thinking\n", timeinms(tv, time->x, time->c),
-			philo->philonum);
-		eat(philo, tv, time);
-		if ((timeinms(tv, time->x, time->c) - time->f) > philo->timetodiems
-			|| checksim(philo))
-			break ;
-		printf("%ld %d is sleeping\n", timeinms(tv, time->x, time->c),
-			philo->philonum);
+		if (eat(philo, tv))
+			return (1);
+		if ((timeinms(tv, philo) - philo->f) > philo->timetodiems)
+			return (philo->dead = 1, 1);
+		if (checksim(philo))
+			return (1);
+		printf("%ld %d is sleeping\n", timeinms(tv, philo), philo->philonum);
 		usleep(philo->timetosleepms * 1000);
-		if ((timeinms(tv, time->x, time->c) - time->f) > philo->timetodiems
-			|| checksim(philo))
-			break ;
+		if ((timeinms(tv, philo) - philo->f) > philo->timetodiems)
+			return (philo->dead = 1, 1);
+		if (checksim(philo))
+			return (1);
+		printf("%ld %d is thinking\n", timeinms(tv, philo), philo->philonum);
 	}
+	return (0);
+}
+
+int	getforkeven(t_philo *philo, struct timeval *tv)
+{
+	pthread_mutex_lock(&philo->right->lock);
+	gettimeofday(tv, NULL);
+	printf("%ld %d has taken a fork\n", timeinms(tv, philo), philo->philonum);
+	if ((timeinms(tv, philo) - philo->f) > philo->timetodiems)
+		return (pthread_mutex_unlock(&philo->lock), philo->dead = 1, 1);
+	if (checksim(philo))
+		return (pthread_mutex_unlock(&philo->lock), 1);
+	pthread_mutex_lock(&philo->lock);
+	gettimeofday(tv, NULL);
+	printf("%ld %d has taken a fork\n", timeinms(tv, philo), philo->philonum);
+	return (0);
+}
+
+int	getforkodd(t_philo *philo, struct timeval *tv)
+{
+	pthread_mutex_lock(&philo->lock);
+	gettimeofday(tv, NULL);
+	printf("%ld %d has taken a fork\n", timeinms(tv, philo), philo->philonum);
+	if (philo->philosall == 1)
+		return (pthread_mutex_unlock(&philo->right->lock), philo->dead = 1, 1);
+	if ((timeinms(tv, philo) - philo->f) > philo->timetodiems)
+		return (pthread_mutex_unlock(&philo->right->lock), philo->dead = 1, 1);
+	if (checksim(philo))
+		return (pthread_mutex_unlock(&philo->right->lock), 1);
+	pthread_mutex_lock(&philo->right->lock);
+	gettimeofday(tv, NULL);
+	printf("%ld %d has taken a fork\n", timeinms(tv, philo), philo->philonum);
 	return (0);
 }
