@@ -6,7 +6,7 @@
 /*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 19:45:18 by jainavas          #+#    #+#             */
-/*   Updated: 2024/12/04 12:50:34 by jainavas         ###   ########.fr       */
+/*   Updated: 2024/12/05 18:14:19 by jainavas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,13 @@ void	*philo_routine(void *philovoid)
 	philo->sim->sim_over = 1;
 	pthread_mutex_unlock(&philo->sim->lock);
 	if (philo->dead == 1)
-		printf("%ld %d died\n", timeinms(&tv, philo), philo->philonum);
+	{
+		pthread_mutex_lock(&philo->sim->lock);
+		if (philo->sim->dontprint == 0)
+			printf("%ld %d died\n", timeinms(&tv, philo), philo->philonum);
+		philo->sim->dontprint = 1;
+		pthread_mutex_unlock(&philo->sim->lock);
+	}
 	return (NULL);
 }
 
@@ -83,6 +89,7 @@ int	main(int argc, char **argv)
 	x = 0;
 	philos = NULL;
 	control.sim_over = 0;
+	control.dontprint = 0;
 	pthread_mutex_init(&control.lock, NULL);
 	if (inputdebug(argc, argv) == -1)
 		return (-1);

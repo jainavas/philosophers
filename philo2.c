@@ -66,20 +66,17 @@ int	eat(t_philo *philo, struct timeval *tv)
 	if (philo->philonum % 2 == 1)
 		if (getforkodd(philo, tv))
 			return (1);
-	gettimeofday(tv, NULL);
 	printf("%ld %d is eating\n", timeinms(tv, philo),
 		philo->philonum);
-	usleep(philo->timetoeatms * 1000);
+	if (bettersleep(philo->timetoeatms, philo))
+		return (pthread_mutex_unlock(&philo->lock),
+			pthread_mutex_unlock(&philo->right->lock), 1);
 	philo->f = timeinms(tv, philo);
 	pthread_mutex_unlock(&philo->lock);
 	pthread_mutex_unlock(&philo->right->lock);
 	philo->maxtimeseaten--;
 	if (philo->maxtimeseaten == 0)
-	{
-		pthread_mutex_lock(&philo->sim->lock);
-		philo->sim->sim_over = 1;
-		pthread_mutex_unlock(&philo->sim->lock);
-	}
+		putsimovr(philo);
 	return (0);
 }
 

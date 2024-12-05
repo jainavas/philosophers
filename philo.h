@@ -6,7 +6,7 @@
 /*   By: jainavas <jainavas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 20:25:51 by jainavas          #+#    #+#             */
-/*   Updated: 2024/11/26 21:16:18 by jainavas         ###   ########.fr       */
+/*   Updated: 2024/12/05 18:26:12 by jainavas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ typedef struct control
 {
 	pthread_mutex_t	lock;
 	int				sim_over;
+	int				dontprint;
 }	t_sim;
 
 typedef struct time
@@ -67,5 +68,7 @@ int			eat(t_philo *philo, struct timeval *tv);
 int			checkoverflow(const char *str);
 int			inputdebug(int argc, char **argv);
 int			routinewhile(t_philo *philo, struct timeval *tv);
+int			bettersleep(long mstosleep, t_philo *philo);
+void		putsimovr(t_philo *philo);
 
 #endif
