@@ -60,6 +60,8 @@ t_philo	*philolast(t_philo *lst)
 
 int	eat(t_philo *philo, struct timeval *tv)
 {
+	if (philo->maxtimeseaten == 0)
+		return (usleep(philo->timetodiems * 1000), 1);
 	if (philo->philonum % 2 == 0)
 		if (getforkeven(philo, tv))
 			return (1);
@@ -75,8 +77,6 @@ int	eat(t_philo *philo, struct timeval *tv)
 	pthread_mutex_unlock(&philo->lock);
 	pthread_mutex_unlock(&philo->right->lock);
 	philo->maxtimeseaten--;
-	if (philo->maxtimeseaten == 0)
-		putsimovr(philo);
 	return (0);
 }
 
