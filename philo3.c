@@ -62,7 +62,8 @@ int	routinewhile(t_philo *philo, struct timeval *tv)
 int	getforkeven(t_philo *philo, struct timeval *tv)
 {
 	pthread_mutex_lock(&philo->right->lock);
-	gettimeofday(tv, NULL);
+	if (checksim(philo))
+		return (pthread_mutex_unlock(&philo->right->lock), 1);
 	printf("%ld %d has taken a fork\n", timeinms(tv, philo), philo->philonum);
 	if ((timeinms(tv, philo) - philo->f) > philo->timetodiems)
 		return (pthread_mutex_unlock(&philo->right->lock), philo->dead = 1, 1);
@@ -79,7 +80,6 @@ int	getforkodd(t_philo *philo, struct timeval *tv)
 	pthread_mutex_lock(&philo->lock);
 	if (checksim(philo))
 		return (pthread_mutex_unlock(&philo->lock), 1);
-	gettimeofday(tv, NULL);
 	printf("%ld %d has taken a fork\n", timeinms(tv, philo), philo->philonum);
 	if (philo->philosall == 1)
 		return (usleep(philo->timetodiems * 1000),
