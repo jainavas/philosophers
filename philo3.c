@@ -61,6 +61,7 @@ int	routinewhile(t_philo *philo, struct timeval *tv)
 
 int	getforkeven(t_philo *philo, struct timeval *tv)
 {
+	usleep(200);
 	pthread_mutex_lock(&philo->right->lock);
 	if (checksim(philo))
 		return (pthread_mutex_unlock(&philo->right->lock), 1);
