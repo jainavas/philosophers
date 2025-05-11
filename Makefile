@@ -3,7 +3,7 @@ RM = rm -f
 
 CC = cc
 
-CCFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
+CCFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address -fno-omit-frame-pointer -O1 -pthread
 
 SRC_DIR = src
 

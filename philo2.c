@@ -12,6 +12,16 @@
 
 #include "philo.h"
 
+/**
+ * @brief Creates a new philosopher and adds it to the linked list
+ * 
+ * Allocates memory for a new philosopher, assigns its number and initializes
+ * its mutex. Connects it to the existing list if any.
+ * 
+ * @param philos Double pointer to the list of philosophers
+ * @param num The ID number of this philosopher
+ * @param numphilos Total number of philosophers in the simulation
+ */
 void	philonew(t_philo **philos, int num, int numphilos)
 {
 	t_philo	*new;
@@ -34,6 +44,14 @@ void	philonew(t_philo **philos, int num, int numphilos)
 	pthread_mutex_init(&new->lock, NULL);
 }
 
+/**
+ * @brief Frees all allocated memory for philosophers
+ * 
+ * Destroys mutexes and frees memory for each philosopher structure in the list.
+ * 
+ * @param philos Double pointer to the list of philosophers
+ * @param nphilos Number of philosophers to free
+ */
 void	freephilos(t_philo **philos, int nphilos)
 {
 	t_philo	*tmp;
@@ -47,6 +65,14 @@ void	freephilos(t_philo **philos, int nphilos)
 	}
 }
 
+/**
+ * @brief Finds the last philosopher in the linked list
+ * 
+ * Traverses the list to find the philosopher with no right neighbor.
+ * 
+ * @param lst Pointer to any philosopher in the list
+ * @return Pointer to the last philosopher in the list
+ */
 t_philo	*philolast(t_philo *lst)
 {
 	t_philo	*tmp;
@@ -58,6 +84,16 @@ t_philo	*philolast(t_philo *lst)
 	return (tmp);
 }
 
+/**
+ * @brief Handles the eating phase of a philosopher
+ * 
+ * Acquires forks in the correct order based on philosopher number,
+ * simulates eating for a specified time, then releases the forks.
+ * 
+ * @param philo The philosopher who is eating
+ * @param tv Timeval structure for timing
+ * @return 1 if simulation should end, 0 to continue
+ */
 int	eat(t_philo *philo, struct timeval *tv)
 {
 	if (philo->maxtimeseaten == 0)
@@ -80,6 +116,16 @@ int	eat(t_philo *philo, struct timeval *tv)
 	return (0);
 }
 
+/**
+ * @brief Validates command line arguments for the simulation
+ * 
+ * Checks if the correct number of arguments is provided and
+ * that all values are positive and don't overflow.
+ * 
+ * @param argc Argument count
+ * @param argv Command line arguments
+ * @return 0 if arguments are valid, -1 otherwise
+ */
 int	inputdebug(int argc, char **argv)
 {
 	if ((argc != 5 && argc != 6) || checkoverflow(argv[1]) == -1
